@@ -40,22 +40,16 @@ def main():
             if not i:
                 continue
 
-            more_info = ydl.extract_info(i["url"], download=False)
+            # more_info = ydl.extract_info(i["url"], download=False)
             videos.append(
                 {
-                    "id": more_info["id"],
-                    "link": more_info.get("url")
-                    or f"https://youtube.com/watch?v={more_info.get('id')}",
-                    "title": more_info.get("title"),
-                    "createdAt": datetime.fromtimestamp(
-                        int(more_info.get("timestamp") or 0)
-                    ).isoformat(timespec="seconds", sep="T")
-                    + "Z",
+                    "id": i["id"],
+                    "link": i.get("url"),
+                    "title": i.get("title"),
                 }
             )
 
-            if len(videos) >= 5:
-                break
+        videos.reverse()
 
         result = requests.post(
             f"{WEBSITE_URL}/api/youtubevideos",
