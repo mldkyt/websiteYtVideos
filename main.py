@@ -44,15 +44,18 @@ def main():
             videos.append(
                 {
                     "id": i["id"],
-                    "link": i.get("url"),
-                    "title": i.get("title"),
+                    "url": i.get("url"),
+                    "title": i.get("title")
                 }
             )
 
         videos.reverse()
 
+        for i in range(len(videos)):
+            videos[i]["order"] = i + 1
+
         result = requests.post(
-            f"{WEBSITE_URL}/api/youtubevideos",
+            f"{WEBSITE_URL}/api/update-videos.php",
             headers={"Authorization": f"Bearer {WEBSITE_TOKEN}"},
             json=videos,
         )
