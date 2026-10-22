@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 
 import requests
 import yt_dlp
@@ -11,9 +10,9 @@ def main():
 
     load_dotenv()
 
-    YT_CHANNEL = os.getenv("YT_CHANNEL") or "https://youtube.com/@lunyauwu"
+    YT_CHANNEL = os.getenv("YT_CHANNEL") or "https://youtube.com/@mldkyt"
 
-    WEBSITE_URL = os.getenv("WEBSITE_URL") or "https://lunya.pet"
+    WEBSITE_URL = os.getenv("WEBSITE_URL") or "https://mldkyt.com"
     WEBSITE_TOKEN = os.getenv("WEBSITE_TOKEN")
 
     if not WEBSITE_TOKEN:
@@ -40,12 +39,15 @@ def main():
             if not i:
                 continue
 
+            print(i)
+
             # more_info = ydl.extract_info(i["url"], download=False)
             videos.append(
                 {
                     "id": i["id"],
                     "url": i.get("url"),
-                    "title": i.get("title")
+                    "title": i.get("title"),
+                    "length": i.get("duration")
                 }
             )
 
@@ -55,7 +57,7 @@ def main():
             videos[i]["order"] = i + 1
 
         result = requests.post(
-            f"{WEBSITE_URL}/api/update-videos.php",
+            f"{WEBSITE_URL}/api/videos",
             headers={"Authorization": f"Bearer {WEBSITE_TOKEN}"},
             json=videos,
         )
