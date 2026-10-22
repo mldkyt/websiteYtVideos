@@ -1,4 +1,6 @@
+import datetime
 import os
+from pprint import pprint
 
 import requests
 import yt_dlp
@@ -33,38 +35,34 @@ def main():
             print("mreow")
             return
 
-        videos = []
-
         for i in info["entries"]:
             if not i:
                 continue
 
-            print(i)
+            existing = requests.get(f"{WEBSITE_URL}/api/videos",
+                                    headers={"Authorization": f"Bearer {WEBSITE_TOKEN}"},
+                                    params={"video_id": i["id"]})
 
-            # more_info = ydl.extract_info(i["url"], download=False)
-            videos.append(
-                {
-                    "id": i["id"],
-                    "url": i.get("url"),
-                    "title": i.get("title"),
-                    "length": i.get("duration")
-                }
-            )
+            if existing.ok:
+                continue
 
-        videos.reverse()
+            more_info = ydl.extract_info(i["url"], download=False)
 
-        for i in range(len(videos)):
-            videos[i]["order"] = i + 1
+            title = more_info["title"]
+            thumbnail = more_info["thumbnail"]
+            length = more_info["duration"]
+            created_at = more_info["upload_date"]
+            created_at = datetime.datetime.strptime(created_at, "%Y%m%d")
 
-        result = requests.post(
-            f"{WEBSITE_URL}/api/videos",
-            headers={"Authorization": f"Bearer {WEBSITE_TOKEN}"},
-            json=videos,
-        )
-
-        if not result.ok:
-            print("Error: ", result.text)
-
+            requests.post(f"{WEBSITE_URL}/api/videos",
+                          headers={"Authorization": f"Bearer {WEBSITE_TOKEN}"},
+                          json={
+                              "id": more_info["id"],
+                              "title": title,
+                              "thumbnailUrl": thumbnail,
+                              "length": length,
+                              "createdAt": created_at.isoformat(),
+                          }).raise_for_status()
 
 if __name__ == "__main__":
     main()
