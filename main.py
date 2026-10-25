@@ -29,7 +29,11 @@ def main():
             "no_warnings": True,
         }
     ) as ydl:
-        info = ydl.extract_info(f"{YT_CHANNEL}/videos", download=False, process=False)
+        try:
+            info = ydl.extract_info(f"{YT_CHANNEL}/videos", download=False, process=False)
+        except Exception as e:
+            print("FAILED", e)
+            return
 
         if "entries" not in info:
             print("mreow")
@@ -46,7 +50,11 @@ def main():
             if existing.ok:
                 continue
 
-            more_info = ydl.extract_info(i["url"], download=False)
+            try:
+                more_info = ydl.extract_info(i["url"], download=False)
+            except Exception as e:
+                print("FAILED", e)
+                continue
 
             title = more_info["title"]
             thumbnail = more_info["thumbnail"]
