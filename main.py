@@ -45,7 +45,7 @@ def main():
 
             existing = requests.get(f"{WEBSITE_URL}/api/videos",
                                     headers={"Authorization": f"Bearer {WEBSITE_TOKEN}"},
-                                    params={"video_id": i["id"]})
+                                    params={"id": i["id"]})
 
             if existing.ok:
                 continue
